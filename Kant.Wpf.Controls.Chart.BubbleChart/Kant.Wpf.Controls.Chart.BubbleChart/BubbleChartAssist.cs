@@ -57,13 +57,13 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        public void ClearChart()
+        public void ClearChart(bool clearDatas = true)
         {
             RemoveElementEventHandlers();
             ClearChartCanvasChilds();
             chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
 
-            if (currentDatas != null)
+            if (currentDatas != null && clearDatas)
             {
                 currentDatas.Clear();
             }
@@ -90,6 +90,8 @@ namespace Kant.Wpf.Controls.Chart
             {
                 return;
             }
+
+            ClearChart(false);
 
             #region set bubble initial information
 

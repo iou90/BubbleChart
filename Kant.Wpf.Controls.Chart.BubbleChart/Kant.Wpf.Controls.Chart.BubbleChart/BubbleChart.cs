@@ -103,6 +103,11 @@ namespace Kant.Wpf.Controls.Chart
             ((BubbleChart)o).assist.UpdateChart((IEnumerable<BubbleData>)e.NewValue);
         }
 
+        private static void OnBubbleGapSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            ((BubbleChart)o).assist.CreateChart();
+        }
+
         private static object HighlightNodeValueCallback(DependencyObject o, object value)
         {
             var chart = (BubbleChart)o;
@@ -132,6 +137,14 @@ namespace Kant.Wpf.Controls.Chart
 
         public static readonly DependencyProperty DatasProperty = DependencyProperty.Register("Datas", typeof(IEnumerable<BubbleData>), typeof(BubbleChart), new PropertyMetadata(new List<BubbleData>(), OnDatasSourceChanged));
 
+        public double BubbleGap
+        {
+            get { return (double)GetValue(BubbleGapProperty); }
+            set { SetValue(BubbleGapProperty, value); }
+        }
+
+        public static readonly DependencyProperty BubbleGapProperty = DependencyProperty.Register("BubbleGap", typeof(double), typeof(BubbleChart), new PropertyMetadata(2.0, OnBubbleGapSourceChanged));
+
         public string HighlightNode
         {
             get { return (string)GetValue(HighlightNodeProperty); }
@@ -154,11 +167,6 @@ namespace Kant.Wpf.Controls.Chart
         #endregion
 
         #region initial settings
-
-        /// <summary>
-        /// will be dp
-        /// </summary>
-        public double BubbleGap { get; set; }
 
         public DataTemplate BubbleLabelTemplate { get; set; }
 

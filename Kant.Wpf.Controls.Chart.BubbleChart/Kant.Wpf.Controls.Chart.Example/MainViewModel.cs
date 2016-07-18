@@ -21,6 +21,7 @@ namespace Kant.Wpf.Controls.Chart.Example
         public MainViewModel()
         {
             random = new Random();
+            BubbleGap = 5;
             bubbleColor = (Brush)Application.Current.FindResource("BubbleColor");
             bubbleLabelStyle1 = (Style)Application.Current.FindResource("BubbleLabelStyle1");
             bubbleLabelStyle2 = (Style)Application.Current.FindResource("BubbleLabelStyle2");
@@ -127,6 +128,8 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 return GetCommand(changeStyles, new RelayCommand(() =>
                 {
+                    HighlightMode = random.Next(2) == 1 ? HighlightMode.MouseEnter : HighlightMode.MouseLeftButtonUp;
+                    BubbleGap = random.Next(2, 15);
                 }));
             }
         }
@@ -146,6 +149,37 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 datas = value;
                 RaisePropertyChanged(() => Datas);
+            }
+        }
+
+        private double bubbleGap;
+        public double BubbleGap
+        {
+            get
+            {
+                return bubbleGap;
+            }
+            set
+            {
+                if (value != bubbleGap)
+                {
+                    bubbleGap = value;
+                    RaisePropertyChanged(() => BubbleGap);
+                }
+            }
+        }
+
+        private HighlightMode highlightMode;
+        public HighlightMode HighlightMode
+        {
+            get
+            {
+                return highlightMode;
+            }
+            set
+            {
+                highlightMode = value;
+                RaisePropertyChanged(() => HighlightMode);
             }
         }
 

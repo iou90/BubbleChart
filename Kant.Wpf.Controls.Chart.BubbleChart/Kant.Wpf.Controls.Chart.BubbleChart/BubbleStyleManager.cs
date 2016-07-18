@@ -24,7 +24,6 @@ namespace Kant.Wpf.Controls.Chart
             chart.BubbleAnticipateMinRadius = 15;
             chart.HighlightOpacity = 1;
             chart.LoweredOpacity = 0.5;
-            chart.BubbleGap = 2; // will setted in dp
         }
 
         public void HighlightingNode(string highlightNode, List<BubbleNode> nodes)
