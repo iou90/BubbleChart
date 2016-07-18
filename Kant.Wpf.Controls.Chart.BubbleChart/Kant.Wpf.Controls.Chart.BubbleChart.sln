@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kant.Wpf.Controls.Chart.BubbleChart", "Kant.Wpf.Controls.Chart.BubbleChart\Kant.Wpf.Controls.Chart.BubbleChart.csproj", "{7A5B5406-C805-47DF-9C53-3D9324C9C3C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kant.Wpf.Controls.Bubble", "Kant.Wpf.Controls.Bubble\Kant.Wpf.Controls.Bubble.csproj", "{76F11285-D4F6-4440-B001-C14A7738CD58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kant.Wpf.Controls.Chart.Example", "Kant.Wpf.Controls.Chart.Example\Kant.Wpf.Controls.Chart.Example.csproj", "{A69B1553-8F6E-47AA-9FA8-FAB6FE5808E6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A5B5406-C805-47DF-9C53-3D9324C9C3C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A5B5406-C805-47DF-9C53-3D9324C9C3C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A5B5406-C805-47DF-9C53-3D9324C9C3C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A5B5406-C805-47DF-9C53-3D9324C9C3C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76F11285-D4F6-4440-B001-C14A7738CD58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76F11285-D4F6-4440-B001-C14A7738CD58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76F11285-D4F6-4440-B001-C14A7738CD58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76F11285-D4F6-4440-B001-C14A7738CD58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A69B1553-8F6E-47AA-9FA8-FAB6FE5808E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A69B1553-8F6E-47AA-9FA8-FAB6FE5808E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A69B1553-8F6E-47AA-9FA8-FAB6FE5808E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A69B1553-8F6E-47AA-9FA8-FAB6FE5808E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

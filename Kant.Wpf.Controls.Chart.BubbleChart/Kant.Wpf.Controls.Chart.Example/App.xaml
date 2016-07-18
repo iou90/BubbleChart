@@ -1,0 +1,35 @@
+﻿<Application x:Class="Kant.Wpf.Controls.Chart.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Kant.Wpf.Controls.Chart.Example"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <RadialGradientBrush x:Key="BubbleColor"
+                             GradientOrigin="0.25, 0.25">
+            <GradientStop Color="#88a8d8d9"
+                          Offset="0" />
+            <GradientStop Color="#FFa8d8d9"
+                          Offset="0.5" />
+            <GradientStop Color="#AAa8d8d9"
+                          Offset="1" />
+        </RadialGradientBrush>
+        <Style x:Key="BubbleLabelStyle1"
+               TargetType="TextBlock">
+            <Setter Property="FontSize"
+                    Value="15" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="Foreground"
+                    Value="Violet" />
+        </Style>
+        <Style x:Key="BubbleLabelStyle2"
+               TargetType="TextBlock">
+            <Setter Property="FontSize"
+                    Value="13" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="Foreground"
+                    Value="DarkRed" />
+        </Style>
+    </Application.Resources>
+</Application>
