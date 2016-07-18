@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Kant.Wpf.Controls.Chart
@@ -69,6 +70,7 @@ namespace Kant.Wpf.Controls.Chart
             }
 
             ClearChartCanvasChilds();
+            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
         }
 
         private void ClearChartCanvasChilds()
@@ -118,18 +120,34 @@ namespace Kant.Wpf.Controls.Chart
 
         private void CreateBubbleNode(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
         {
+            #region initial bubble node 
+
             var newNode = new BubbleNode();
             newNode.Radius = newBubbleRadius;
+            newNode.Name = data.Name;
 
             newNode.Shape = new Bubble()
             {
                 DataContext = data,
-                Fill = data.Color,
                 Diameter = newNode.Radius * 2,
                 ContentTemplate = chart.BubbleLabelTemplate
             };
 
-            newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data)); 
+            if(data.Color != null)
+            {
+                newNode.Shape.Fill = data.Color;
+            }
+
+            newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
+            newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data));
+
+            // for highlighting or other actions
+            newNode.Shape.Tag = newNode.Name;
+            newNode.Shape.MouseEnter += NodeMouseEnter;
+            newNode.Shape.MouseLeave += NodeMouseLeave;
+            newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
+
+            #endregion
 
             // create first bubble
             if (currentNodes.Count == 0)
@@ -454,6 +472,34 @@ namespace Kant.Wpf.Controls.Chart
                         return false;
                     }
                 }
+            }
+        }
+
+        #endregion
+
+        #region node events
+
+        private void NodeMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (chart.HighlightMode == HighlightMode.MouseEnter)
+            {
+                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
+            }
+        }
+
+        private void NodeMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (chart.HighlightMode == HighlightMode.MouseEnter)
+            {
+                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
+            }
+        }
+
+        private void NodeMouseLeftButtonUp(object sender, MouseEventArgs e)
+        {
+            if (chart.HighlightMode == HighlightMode.MouseLeftButtonUp)
+            {
+                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
             }
         }
 

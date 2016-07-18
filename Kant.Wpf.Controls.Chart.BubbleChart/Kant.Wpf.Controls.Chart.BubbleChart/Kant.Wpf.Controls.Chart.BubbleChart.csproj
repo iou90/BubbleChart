@@ -65,6 +65,8 @@
     <Compile Include="BubbleData.cs" />
     <Compile Include="BubbleNode.cs" />
     <Compile Include="BubbleStyleManager.cs" />
+    <Compile Include="Element.cs" />
+    <Compile Include="HighlightMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

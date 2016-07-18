@@ -104,6 +104,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 return GetCommand(highlightingNode, new RelayCommand(() =>
                 {
+                    HighlightNode = "word" + "5"; /*random.Next(0, 55).ToString();*/
                 }));
             }
         }
@@ -145,6 +146,20 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 datas = value;
                 RaisePropertyChanged(() => Datas);
+            }
+        }
+
+        private string highlightNode;
+        public string HighlightNode
+        {
+            get
+            {
+                return highlightNode;
+            }
+            set
+            {
+                highlightNode = value;
+                RaisePropertyChanged(() => HighlightNode);
             }
         }
 

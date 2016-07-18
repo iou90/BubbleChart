@@ -36,6 +36,12 @@ namespace Kant.Wpf.Controls
             set { SetValue(FillProperty, value); }
         }
 
-        public static readonly DependencyProperty FillProperty = DependencyProperty.Register("Fill", typeof(Brush), typeof(Bubble));
+        public static readonly DependencyProperty FillProperty = DependencyProperty.Register("Fill", typeof(Brush), typeof(Bubble), new PropertyMetadata(new RadialGradientBrush(new GradientStopCollection()
+        {
+            new GradientStop((Color)ColorConverter.ConvertFromString("#88bdc0ba"), 0),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#FFbdc0ba"), 0.5),
+            new GradientStop((Color)ColorConverter.ConvertFromString("#AAbdc0ba"), 1),
+        })
+        { GradientOrigin = new Point(0.25, 0.25) }));
     }
 }

@@ -103,6 +103,19 @@ namespace Kant.Wpf.Controls.Chart
             ((BubbleChart)o).assist.UpdateChart((IEnumerable<BubbleData>)e.NewValue);
         }
 
+        private static object HighlightNodeValueCallback(DependencyObject o, object value)
+        {
+            var chart = (BubbleChart)o;
+            chart.styleManager.HighlightingNode((string)value, chart.assist.CurrentNodes);
+
+            return value;
+        }
+
+        private static void OnHighlightModeSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            ((BubbleChart)o).SetCurrentValue(HighlightNodeProperty, null);
+        }
+
         #endregion
 
         #endregion
@@ -119,6 +132,25 @@ namespace Kant.Wpf.Controls.Chart
 
         public static readonly DependencyProperty DatasProperty = DependencyProperty.Register("Datas", typeof(IEnumerable<BubbleData>), typeof(BubbleChart), new PropertyMetadata(new List<BubbleData>(), OnDatasSourceChanged));
 
+        public string HighlightNode
+        {
+            get { return (string)GetValue(HighlightNodeProperty); }
+            set { SetValue(HighlightNodeProperty, value); }
+        }
+
+        public static readonly DependencyProperty HighlightNodeProperty = DependencyProperty.Register("HighlightNode", typeof(string), typeof(BubbleChart), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, null, HighlightNodeValueCallback));
+
+        /// <summary>
+        /// MouseLeftButtonUp by default
+        /// </summary>
+        public HighlightMode HighlightMode
+        {
+            get { return (HighlightMode)GetValue(HighlightModeProperty); }
+            set { SetValue(HighlightModeProperty, value); }
+        }
+
+        public static readonly DependencyProperty HighlightModeProperty = DependencyProperty.Register("HighlightMode", typeof(HighlightMode), typeof(BubbleChart), new PropertyMetadata(HighlightMode.MouseLeftButtonUp, OnHighlightModeSourceChanged));
+
         #endregion
 
         #region initial settings
@@ -131,6 +163,21 @@ namespace Kant.Wpf.Controls.Chart
         public DataTemplate BubbleLabelTemplate { get; set; }
 
         public double BubbleAnticipateMinRadius { get; set; }
+
+        public Brush HighlightBrush { get; set; }
+
+        /// <summary>
+        /// apply to nodes, links
+        /// it does not work if you have already setted HighlightBrush property
+        /// 1.0 by default
+        /// </summary>
+        public double HighlightOpacity { get; set; }
+
+        /// <summary>
+        /// apply to nodes, links
+        /// 0.25 by default
+        /// </summary>
+        public double LoweredOpacity { get; set; }
 
         #endregion
 

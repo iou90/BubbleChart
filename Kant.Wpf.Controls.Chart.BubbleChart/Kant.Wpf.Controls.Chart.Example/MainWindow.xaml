@@ -61,7 +61,10 @@
             </StackPanel>
             <Border Grid.Row="2"
                     Margin="20">
-                <kantCharts:BubbleChart Datas="{Binding Datas}">
+                <kantCharts:BubbleChart BubbleGap="5"
+                                        LoweredOpacity="0.55"
+                                        Datas="{Binding Datas}"
+                                        HighlightNode="{Binding HighlightNode}">
                     <kantCharts:BubbleChart.BubbleLabelTemplate>
                         <DataTemplate DataType="kantControls:Bubble">
                             <StackPanel>
@@ -76,13 +79,6 @@
                             </StackPanel>
                         </DataTemplate>
                     </kantCharts:BubbleChart.BubbleLabelTemplate>
-                    <!--<kantCharts:BubbleChart.BubbleContent>
-                        <StackPanel>
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding Name}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding Weight}" />
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding Catalog}" />
-                        </StackPanel>
-                    </kantCharts:BubbleChart.BubbleContent>-->
                 </kantCharts:BubbleChart>
                 <!--<kantControls:Bubble Diameter="{Binding Diameter}">
                     <TextBlock Text="{Binding Label}" />

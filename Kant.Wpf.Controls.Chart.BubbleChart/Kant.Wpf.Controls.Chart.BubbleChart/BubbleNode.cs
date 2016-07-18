@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kant.Wpf.Controls.Chart
 {
-    public class BubbleNode
+    public class BubbleNode : Element
     {
         public BubbleNode()
         {
@@ -27,8 +27,8 @@ namespace Kant.Wpf.Controls.Chart
 
         public double Radius { get; set; }
 
-        public bool IsHighlight { get; set; }
-
         public Bubble Shape { get; set; }
+
+        public string Name { get; set; }
     }
 }
