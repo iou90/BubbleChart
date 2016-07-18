@@ -59,7 +59,11 @@ namespace Kant.Wpf.Controls.Chart
 
         public void ClearChart()
         {
-            if(currentDatas != null)
+            RemoveElementEventHandlers();
+            ClearChartCanvasChilds();
+            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
+
+            if (currentDatas != null)
             {
                 currentDatas.Clear();
             }
@@ -68,9 +72,6 @@ namespace Kant.Wpf.Controls.Chart
             {
                 CurrentNodes.Clear();
             }
-
-            ClearChartCanvasChilds();
-            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
         }
 
         private void ClearChartCanvasChilds()
@@ -500,6 +501,19 @@ namespace Kant.Wpf.Controls.Chart
             if (chart.HighlightMode == HighlightMode.MouseLeftButtonUp)
             {
                 chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
+            }
+        }
+
+        private void RemoveElementEventHandlers()
+        {
+            if(CurrentNodes != null)
+            {
+                foreach(var node in CurrentNodes)
+                {
+                    node.Shape.MouseEnter -= NodeMouseEnter;
+                    node.Shape.MouseLeave -= NodeMouseLeave;
+                    node.Shape.MouseLeftButtonUp -= NodeMouseLeftButtonUp;
+                }
             }
         }
 

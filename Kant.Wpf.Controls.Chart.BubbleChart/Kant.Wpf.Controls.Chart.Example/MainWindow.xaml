@@ -63,6 +63,7 @@
                     Margin="20">
                 <kantCharts:BubbleChart BubbleGap="5"
                                         LoweredOpacity="0.55"
+                                        HighlightMode="MouseEnter"
                                         Datas="{Binding Datas}"
                                         HighlightNode="{Binding HighlightNode}">
                     <kantCharts:BubbleChart.BubbleLabelTemplate>
