@@ -31,6 +31,7 @@ namespace Kant.Wpf.Controls.Chart
             styleManager = new BubbleStyleManager(this);
             styleManager.SetDefaultStyles();
             assist = new BubbleChartAssist(this, styleManager);
+            SizeChanged += assist.ChartSizeChanged;
 
             Loaded += (s, e) =>
             {
@@ -61,7 +62,6 @@ namespace Kant.Wpf.Controls.Chart
             {
                 chartCanvas = canvas;
                 assist.ChartCanvas = chartCanvas;
-                //assist.ChartCanvas.SizeChanged += assist.ChartCanvasSizeChanged;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Kant.Wpf.Controls.Chart
                 {
                     if (assist != null)
                     {
-                        //assist.ClearDiagram();
+                        assist.ClearChart();
                     }
                 }
 
@@ -127,8 +127,6 @@ namespace Kant.Wpf.Controls.Chart
         /// will be dp
         /// </summary>
         public double BubbleGap { get; set; }
-
-        public object BubbleContent { get; set; }
 
         public DataTemplate BubbleLabelTemplate { get; set; }
 

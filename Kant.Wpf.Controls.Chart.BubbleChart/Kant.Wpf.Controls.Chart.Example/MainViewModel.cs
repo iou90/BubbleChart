@@ -81,6 +81,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 return GetCommand(clearDiagram, new RelayCommand(() =>
                 {
+                    Datas = null;
                 }));
             }
         }

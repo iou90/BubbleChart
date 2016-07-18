@@ -26,6 +26,17 @@ namespace Kant.Wpf.Controls.Chart
 
         #region Methods
 
+        public void ChartSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if(!chart.IsChartCreated || CurrentNodes == null)
+            {
+                return;
+            }
+
+            ClearChartCanvasChilds();
+            DrawBubbles(new Point(chart.ActualWidth / 2, chart.ActualHeight / 2), CurrentNodes);
+        }
+
         public void UpdateChart(IEnumerable<BubbleData> datas)
         {
             // clear diagram first
@@ -44,6 +55,31 @@ namespace Kant.Wpf.Controls.Chart
                 CreateChart();
             }
         }
+
+        public void ClearChart()
+        {
+            if(currentDatas != null)
+            {
+                currentDatas.Clear();
+            }
+
+            if (CurrentNodes != null)
+            {
+                CurrentNodes.Clear();
+            }
+
+            ClearChartCanvasChilds();
+        }
+
+        private void ClearChartCanvasChilds()
+        {
+            if (ChartCanvas != null && ChartCanvas.Children != null)
+            {
+                ChartCanvas.Children.Clear();
+            }
+        }
+
+        #region draw bubbles
 
         public void CreateChart()
         {
@@ -78,15 +114,6 @@ namespace Kant.Wpf.Controls.Chart
             }
 
             DrawBubbles(canvasCenter, CurrentNodes);
-        }
-
-        private void ClearChart()
-        {
-            if (!(ChartCanvas == null || ChartCanvas.Children == null || ChartCanvas.Children.Count == 0))
-            {
-                ChartCanvas.Children.Clear();
-                CurrentNodes.Clear();
-            }
         }
 
         private void CreateBubbleNode(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
@@ -429,6 +456,8 @@ namespace Kant.Wpf.Controls.Chart
                 }
             }
         }
+
+        #endregion
 
         #endregion
 
