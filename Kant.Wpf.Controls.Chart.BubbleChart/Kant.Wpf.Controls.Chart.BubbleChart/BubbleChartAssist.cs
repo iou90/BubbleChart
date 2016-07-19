@@ -361,9 +361,7 @@ namespace Kant.Wpf.Controls.Chart
 
                 foreach (var record in data.LabelSizes)
                 {
-                    var marginAlpha = 15;
                     var length = (node.Radius / Math.Sqrt(2)) * 2;
-                    length -= length / marginAlpha;
                     scales.Add(record.Key, (length / (record.Value.Height > record.Value.Width ? record.Value.Height : record.Value.Width)));
                 }
 

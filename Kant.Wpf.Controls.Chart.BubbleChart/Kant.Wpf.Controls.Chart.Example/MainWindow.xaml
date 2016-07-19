@@ -71,7 +71,8 @@
             </StackPanel>
             <Border Grid.Row="2"
                     Margin="20">
-                <kantCharts:BubbleChart LoweredOpacity="0.65"
+                <kantCharts:BubbleChart x:Name="bubbleChart"
+                                        LoweredOpacity="0.65"
                                         HighlightBrush="{StaticResource HighlightBrush}"
                                         BubbleGap="{Binding BubbleGap}"
                                         HighlightMode="{Binding HighlightMode}"
@@ -87,7 +88,6 @@
                                                     ScaleY="{Binding LabelScales[Name]}" />
                                 </StackPanel.RenderTransform>
                                 <TextBlock HorizontalAlignment="Center"
-                                           Margin="0,-5"
                                            Style="{StaticResource BubbleLabelStyle1}"
                                            Text="{Binding Name}"></TextBlock>
                                 <TextBlock HorizontalAlignment="Center"

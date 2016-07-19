@@ -18,7 +18,7 @@
             <Setter Property="FontSize"
                     Value="15" />
             <Setter Property="Margin"
-                    Value="5" />
+                    Value="5,0" />
             <Setter Property="Foreground"
                     Value="Violet" />
         </Style>
@@ -27,7 +27,7 @@
             <Setter Property="FontSize"
                     Value="13" />
             <Setter Property="Margin"
-                    Value="5" />
+                    Value="5,0" />
             <Setter Property="Foreground"
                     Value="DarkRed" />
         </Style>
