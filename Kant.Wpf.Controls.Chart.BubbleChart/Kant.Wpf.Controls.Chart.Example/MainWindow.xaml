@@ -74,6 +74,7 @@
                 <kantCharts:BubbleChart x:Name="bubbleChart"
                                         LoweredOpacity="0.65"
                                         HighlightBrush="{StaticResource HighlightBrush}"
+                                        BubbleAnticipateMinRadius="{Binding AnticipateMinRadius}"
                                         BubbleGap="{Binding BubbleGap}"
                                         HighlightMode="{Binding HighlightMode}"
                                         Datas="{Binding Datas}"

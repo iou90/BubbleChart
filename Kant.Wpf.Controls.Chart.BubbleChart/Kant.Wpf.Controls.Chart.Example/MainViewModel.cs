@@ -23,13 +23,14 @@ namespace Kant.Wpf.Controls.Chart.Example
         public MainViewModel()
         {
             random = new Random();
-            BubbleGap = 1;
             bubbleColor = (Brush)Application.Current.FindResource("BubbleColor");
             bubbleLabelStyle1 = (Style)Application.Current.FindResource("BubbleLabelStyle1");
             bubbleLabelStyle2 = (Style)Application.Current.FindResource("BubbleLabelStyle2");
             BubbleLabelStyle = bubbleLabelStyle2;
             Label = "finish the fight";
             Diameter = 55;
+            BubbleGap = 5;
+            AnticipateMinRadius = 15;
 
             // random datas
             var datas = new List<BubbleData>();
@@ -150,6 +151,7 @@ namespace Kant.Wpf.Controls.Chart.Example
                 {
                     HighlightMode = random.Next(2) == 1 ? HighlightMode.MouseEnter : HighlightMode.MouseLeftButtonUp;
                     BubbleGap = random.Next(2, 15);
+                    AnticipateMinRadius = random.Next(15, 25);
                 }));
             }
         }
@@ -169,6 +171,23 @@ namespace Kant.Wpf.Controls.Chart.Example
             {
                 datas = value;
                 RaisePropertyChanged(() => Datas);
+            }
+        }
+
+        private double anticipateMinRadius;
+        public double AnticipateMinRadius
+        {
+            get
+            {
+                return anticipateMinRadius;
+            }
+            set
+            {
+                if (value != anticipateMinRadius)
+                {
+                    anticipateMinRadius = value;
+                    RaisePropertyChanged(() => AnticipateMinRadius);
+                }
             }
         }
 

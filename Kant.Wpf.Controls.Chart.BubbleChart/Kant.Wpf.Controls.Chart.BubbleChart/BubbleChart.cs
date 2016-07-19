@@ -109,6 +109,11 @@ namespace Kant.Wpf.Controls.Chart
             ((BubbleChart)o).assist.CreateChart();
         }
 
+        private static void OnBubbleAnticipateMinRadiusSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            ((BubbleChart)o).assist.CreateChart();
+        }
+
         private static object HighlightNodeValueCallback(DependencyObject o, object value)
         {
             var chart = (BubbleChart)o;
@@ -138,13 +143,21 @@ namespace Kant.Wpf.Controls.Chart
 
         public static readonly DependencyProperty DatasProperty = DependencyProperty.Register("Datas", typeof(IEnumerable<BubbleData>), typeof(BubbleChart), new PropertyMetadata(new List<BubbleData>(), OnDatasSourceChanged));
 
+        public double BubbleAnticipateMinRadius
+        {
+            get { return (double)GetValue(BubbleAnticipateMinRadiusProperty); }
+            set { SetValue(BubbleAnticipateMinRadiusProperty, value); }
+        }
+
+        public static readonly DependencyProperty BubbleAnticipateMinRadiusProperty = DependencyProperty.Register("BubbleAnticipateMinRadius", typeof(double), typeof(BubbleChart), new PropertyMetadata(15.0, OnBubbleAnticipateMinRadiusSourceChanged));
+
         public double BubbleGap
         {
             get { return (double)GetValue(BubbleGapProperty); }
             set { SetValue(BubbleGapProperty, value); }
         }
 
-        public static readonly DependencyProperty BubbleGapProperty = DependencyProperty.Register("BubbleGap", typeof(double), typeof(BubbleChart), new PropertyMetadata(2.0, OnBubbleGapSourceChanged));
+        public static readonly DependencyProperty BubbleGapProperty = DependencyProperty.Register("BubbleGap", typeof(double), typeof(BubbleChart), new PropertyMetadata(5.0, OnBubbleGapSourceChanged));
 
         public string HighlightNode
         {
@@ -170,9 +183,6 @@ namespace Kant.Wpf.Controls.Chart
         #region initial settings
 
         public DataTemplate BubbleLabelTemplate { get; set; }
-
-        // will be dp
-        public double BubbleAnticipateMinRadius { get; set; }
 
         public Brush HighlightBrush { get; set; }
 

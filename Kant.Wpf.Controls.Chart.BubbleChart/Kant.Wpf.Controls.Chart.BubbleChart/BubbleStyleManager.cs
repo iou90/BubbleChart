@@ -21,7 +21,6 @@ namespace Kant.Wpf.Controls.Chart
 
         public void SetDefaultStyles()
         {
-            chart.BubbleAnticipateMinRadius = 15;
             chart.HighlightOpacity = 1;
             chart.LoweredOpacity = 0.5;
         }
