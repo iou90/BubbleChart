@@ -29,17 +29,17 @@ namespace Kant.Wpf.Controls.Chart.Example
             BubbleLabelStyle = bubbleLabelStyle2;
             Label = "finish the fight";
             Diameter = 55;
-            BubbleGap = 5;
-            AnticipateMinRadius = 15;
+            BubbleGap = 1;
+            //AnticipateMinRadius = 1;
 
             // random datas
             var datas = new List<BubbleData>();
-            var count = 7;
+            var count = 10;
 
             for(var index = 0; index < count; index++)
             {
                 var name = "word" + index.ToString();
-                var weight = random.Next(5, 55555);
+                var weight = 555 * (index + 1);
 
                 datas.Add(new BubbleData()
                 {
@@ -63,14 +63,14 @@ namespace Kant.Wpf.Controls.Chart.Example
         #region Commands
 
         private ICommand changeDatas;
-        public ICommand ChangeDatas 
+        public ICommand ChangeDatas
         {
             get
             {
                 return GetCommand(changeDatas, new RelayCommand<object>(o =>
                 {
                     var datas = new List<BubbleData>();
-                    var count = random.Next(15, 55);
+                    var count = random.Next(55, 155);
 
                     for (var index = 0; index < count; index++)
                     {

@@ -36,13 +36,7 @@ namespace Kant.Wpf.Controls.Chart
 
             Loaded += (s, e) =>
             {
-                if (IsChartCreated)
-                {
-                    return;
-                }
-
                 assist.CreateChart();
-                IsChartCreated = true;
             };
         }
 
@@ -143,13 +137,13 @@ namespace Kant.Wpf.Controls.Chart
 
         public static readonly DependencyProperty DatasProperty = DependencyProperty.Register("Datas", typeof(IEnumerable<BubbleData>), typeof(BubbleChart), new PropertyMetadata(new List<BubbleData>(), OnDatasSourceChanged));
 
-        public double BubbleAnticipateMinRadius
-        {
-            get { return (double)GetValue(BubbleAnticipateMinRadiusProperty); }
-            set { SetValue(BubbleAnticipateMinRadiusProperty, value); }
-        }
+        //public double BubbleAnticipateMinRadius
+        //{
+        //    get { return (double)GetValue(BubbleAnticipateMinRadiusProperty); }
+        //    set { SetValue(BubbleAnticipateMinRadiusProperty, value); }
+        //}
 
-        public static readonly DependencyProperty BubbleAnticipateMinRadiusProperty = DependencyProperty.Register("BubbleAnticipateMinRadius", typeof(double), typeof(BubbleChart), new PropertyMetadata(15.0, OnBubbleAnticipateMinRadiusSourceChanged));
+        //public static readonly DependencyProperty BubbleAnticipateMinRadiusProperty = DependencyProperty.Register("BubbleAnticipateMinRadius", typeof(double), typeof(BubbleChart), new PropertyMetadata(15.0, OnBubbleAnticipateMinRadiusSourceChanged));
 
         public double BubbleGap
         {
@@ -200,8 +194,6 @@ namespace Kant.Wpf.Controls.Chart
         public double LoweredOpacity { get; set; }
 
         #endregion
-
-        public bool IsChartCreated { get; private set; }
 
         private BubbleStyleManager styleManager;
 

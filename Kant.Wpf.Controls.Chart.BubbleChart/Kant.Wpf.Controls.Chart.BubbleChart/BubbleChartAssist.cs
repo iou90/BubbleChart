@@ -30,7 +30,7 @@ namespace Kant.Wpf.Controls.Chart
 
         public void ChartSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if(!chart.IsChartCreated || CurrentNodes == null)
+            if(!chart.IsLoaded || CurrentNodes == null)
             {
                 return;
             }
@@ -51,8 +51,7 @@ namespace Kant.Wpf.Controls.Chart
 
             currentDatas = datas.ToList();
 
-            // drawing...
-            if (chart.IsChartCreated)
+            if (chart.IsLoaded)
             {
                 CreateChart();
             }
@@ -87,7 +86,7 @@ namespace Kant.Wpf.Controls.Chart
 
         public void CreateChart()
         {
-            if (currentDatas == null || chart.ActualHeight <= 0 || chart.ActualWidth <= 0)
+            if (currentDatas == null || !chart.IsLoaded || chart.ActualHeight <= 0 || chart.ActualWidth <= 0)
             {
                 return;
             }
@@ -96,17 +95,21 @@ namespace Kant.Wpf.Controls.Chart
 
             #region set bubble initial information
 
+            var anticipateMinRaidus = 15;
             var bubbleLargerCoefficient = 5;
             var canvasCenter = new Point(chart.ActualWidth / 2, chart.ActualHeight / 2);
             var canvasRadius = Math.Min(canvasCenter.X, canvasCenter.Y);
             var canvasArea = Math.PI * Math.Pow(canvasRadius, 2);
             var singleBubbleAverageArea = canvasArea / currentDatas.Count;
             var bubbleMaxRadius = Math.Sqrt(singleBubbleAverageArea / Math.PI);
-            bubbleMaxRadius = bubbleMaxRadius / chart.BubbleAnticipateMinRadius < bubbleLargerCoefficient ? chart.BubbleAnticipateMinRadius * bubbleLargerCoefficient : bubbleMaxRadius;
+            //bubbleMaxRadius = bubbleMaxRadius / chart.BubbleAnticipateMinRadius < bubbleLargerCoefficient ? chart.BubbleAnticipateMinRadius * bubbleLargerCoefficient : bubbleMaxRadius;
+            bubbleMaxRadius = bubbleMaxRadius / anticipateMinRaidus < bubbleLargerCoefficient ? anticipateMinRaidus * bubbleLargerCoefficient : bubbleMaxRadius;
             var maxWeight = currentDatas.Max(d => d.Weight);
             var minWeight = currentDatas.Min(d => d.Weight);
-            var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : chart.BubbleAnticipateMinRadius;
-            var temp = chart.BubbleAnticipateMinRadius * 2;
+            //var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : chart.BubbleAnticipateMinRadius;
+            var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : anticipateMinRaidus;
+            //var temp = chart.BubbleAnticipateMinRadius * 2;
+            var temp = anticipateMinRaidus * 2;
             var margin = bubbleMinRaidus < temp ? temp - bubbleMinRaidus : 0;
 
             #endregion
@@ -114,7 +117,8 @@ namespace Kant.Wpf.Controls.Chart
             // create bubble nodes
             foreach (var data in currentDatas)
             {
-                var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
+                //var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
+                var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - anticipateMinRaidus) / (maxWeight - minWeight)) + anticipateMinRaidus;
                 bubbleRadius += margin;
                 CreateBubbleNode(data, CurrentNodes, canvasCenter, bubbleRadius, chart.BubbleGap);
             }
@@ -182,7 +186,7 @@ namespace Kant.Wpf.Controls.Chart
 
             var initialAngle = 70;
 
-            // find second tangent bubble from currrent nodes except the last of it)
+            // find second tangent bubble from currrent nodes except the last of it
             for (var index = 0; index < currentNodes.Count - 1; index++)
             {
                 #region prepare for checking collisions
