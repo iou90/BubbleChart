@@ -9,17 +9,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Bubble}">
-                    <Grid>
-                        <Ellipse x:Name="bubble" 
-                                 Width="{TemplateBinding Diameter}"
-                                 Height="{TemplateBinding Diameter}"
-                                 Fill="{TemplateBinding Fill}"
-                                 SnapsToDevicePixels="True" />
-                        <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Opacity="{Binding ElementName=bubble, Path=Fill.Opacity}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
-                    </Grid>
+                    <!--the canvas make bubble content can break through the boundary of the bubble-->
+                    <Canvas>
+                        <Grid>
+                            <Ellipse x:Name="bubble"
+                                     Width="{TemplateBinding Diameter}"
+                                     Height="{TemplateBinding Diameter}"
+                                     Fill="{TemplateBinding Fill}"
+                                     SnapsToDevicePixels="True" />
+                            <ContentPresenter Opacity="{Binding ElementName=bubble, Path=Fill.Opacity}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Grid>
+                    </Canvas>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

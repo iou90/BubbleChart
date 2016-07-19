@@ -1,14 +1,10 @@
-﻿using Kant.Wpf.Toolkit;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Kant.Wpf.Controls.Chart
@@ -27,17 +23,6 @@ namespace Kant.Wpf.Controls.Chart
         #endregion
 
         #region Methods
-
-        public void ChartSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if(!chart.IsChartCreated || CurrentNodes == null)
-            {
-                return;
-            }
-
-            ClearChartCanvasChilds();
-            DrawBubbles(new Point(chart.ActualWidth / 2, chart.ActualHeight / 2), CurrentNodes, currentDatas);
-        }
 
         public void UpdateChart(IEnumerable<BubbleData> datas)
         {
@@ -58,41 +43,12 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        public void ClearChart(bool clearDatas = true)
-        {
-            RemoveElementEventHandlers();
-            ClearChartCanvasChilds();
-            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
-
-            if (currentDatas != null && clearDatas)
-            {
-                currentDatas.Clear();
-            }
-
-            if (CurrentNodes != null)
-            {
-                CurrentNodes.Clear();
-            }
-        }
-
-        private void ClearChartCanvasChilds()
-        {
-            if (ChartCanvas != null && ChartCanvas.Children != null)
-            {
-                ChartCanvas.Children.Clear();
-            }
-        }
-
-        #region draw bubbles
-
         public void CreateChart()
         {
             if (currentDatas == null || chart.ActualHeight <= 0 || chart.ActualWidth <= 0)
             {
                 return;
             }
-
-            ClearChart(false);
 
             #region set bubble initial information
 
@@ -117,41 +73,210 @@ namespace Kant.Wpf.Controls.Chart
                 var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
                 bubbleRadius += margin;
                 CreateBubbleNode(data, CurrentNodes, canvasCenter, bubbleRadius, chart.BubbleGap);
+                //CreateBubbleNode1(data, CurrentNodes, canvasCenter, bubbleRadius, chart.BubbleGap);
             }
 
-            DrawBubbles(canvasCenter, CurrentNodes,  currentDatas);
+            DrawBubbles(canvasCenter, CurrentNodes);
         }
 
-        private void CreateBubbleNode(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
+        private void ClearChart()
         {
-            #region initial bubble node 
+            if (!(ChartCanvas == null || ChartCanvas.Children == null || ChartCanvas.Children.Count == 0))
+            {
+                ChartCanvas.Children.Clear();
+                CurrentNodes.Clear();
+            }
+        }
 
+        private void CreateBubbleNode1(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
+        {
             var newNode = new BubbleNode();
             newNode.Radius = newBubbleRadius;
-            newNode.Name = data.Name;
+            bool oneFlag = false;
+            bool twoFlag = false;
 
             newNode.Shape = new Bubble()
             {
                 DataContext = data,
                 Diameter = newNode.Radius * 2,
-                ContentTemplate = chart.BubbleLabelTemplate
+                Content = chart.BubbleContent
             };
 
-            if(data.Color != null)
+
+            // 设定第一个气泡信息（第一个气泡在画布中心点位置）
+            if (currentNodes.Count == 0)
             {
-                newNode.Shape.Fill = data.Color;
+                // 设定气泡中心点坐标
+                newNode.X = canvasCenter.X;
+                newNode.Y = canvasCenter.Y;
+
+                currentNodes.Add(newNode);
             }
+            else if (currentNodes.Count == 1)
+            {
+                // 设定第三个气泡信息（位置随机设定）
+                //int r = random.Next(0, 359);
+                int r = 45;
+                // 设定气泡中心点坐标
+                newNode.X = canvasCenter.X + Math.Sin(Math.PI / 180 * r) * (currentNodes[0].Radius + newNode.Radius + bubbleGap + 100);
+                newNode.Y = canvasCenter.Y + Math.Cos(Math.PI / 180 * r) * (currentNodes[0].Radius + newNode.Radius + bubbleGap - 100);
+                // 设定相切气泡
+                newNode.TangentBubbles.Add(currentNodes[0]);
 
-            newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
-            newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data));
+                currentNodes.Add(newNode);
+            }
+            else
+            {
+                //int r = random.Next(1, 100);
+                int r = 70;
+                //var findBubbleList = new List<BubbleNode>();
 
-            // for highlighting or other actions
-            newNode.Shape.Tag = newNode.Name;
-            newNode.Shape.MouseEnter += NodeMouseEnter;
-            newNode.Shape.MouseLeave += NodeMouseLeave;
-            newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
+                //for (var index = currentNodes.Count - 2; index >= 0; index--)
+                //{
+                //    findBubbleList.Insert(0, currentNodes[index]);
+                //}
+                var findBubbleList = currentNodes;
 
-            #endregion
+                for (int i = 0; i < findBubbleList.Count - 1; i++)
+                    {
+                        // 求两个圆的交点处理逻辑
+                        // 以第一个圆的中心为坐标中心（坐标转换利于计算，圆心为（0， 0）圆方程：x^2 + y^2 = r1^2）
+                        // 第一个圆的半径（第一个相切气泡的半径 + 新气泡的半径 + 气泡间隔）
+                        double r1 = currentNodes.LastOrDefault().Radius + newNode.Radius + bubbleGap;
+
+                        // 第二个圆的中心相对第一个圆的坐标(圆方程：(x - x2)^2 + (y - y2)^2 = r2^2)
+                        double x2 = findBubbleList[i].X - currentNodes.LastOrDefault().X;
+                        double y2 = findBubbleList[i].Y - currentNodes.LastOrDefault().Y;
+                        // 第二个圆的半径（第二个相切气泡的半径 + 新气泡的半径 + 气泡间隔）
+                        double r2 = findBubbleList[i].Radius + newNode.Radius + bubbleGap;
+
+                        // 两式合并
+                        double a = 4 * (x2 * x2 + y2 * y2);
+                        double b = -4 * y2 * (x2 * x2 + y2 * y2 + r1 * r1 - r2 * r2);
+                        double c = (x2 * x2 + y2 * y2 + r1 * r1 - r2 * r2) * (x2 * x2 + y2 * y2 + r1 * r1 - r2 * r2) - 4 * x2 * x2 * r1 * r1;
+
+                        // 有解（b2-4ac≥0）
+                        if (b * b - 4 * a * c >= 0)
+                        {
+                            if (x2 == 0)
+                            {
+                                x2 = 0.00000000000001;
+                            }
+
+                            double yOne = (-b + Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                            double xOne = (x2 * x2 + y2 * y2 + r1 * r1 - r2 * r2 - 2 * y2 * yOne) / (2 * x2);
+                            double yTwo = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
+                            double xTwo = (x2 * x2 + y2 * y2 + r1 * r1 - r2 * r2 - 2 * y2 * yTwo) / (2 * x2);
+
+                            //相对坐标转绝对坐标
+                            Point pointOne = new Point(xOne + currentNodes.LastOrDefault().X, yOne + currentNodes.LastOrDefault().Y);
+                            Point pointTwo = new Point(xTwo + currentNodes.LastOrDefault().X, yTwo + currentNodes.LastOrDefault().Y);
+
+                            oneFlag = false;
+                            twoFlag = false;
+
+                            // 判断是否有重叠(与以存在的所有气泡进行判断)
+                            for (int j = currentNodes.Count - 1; j >= 0; j--)
+                            {
+                                if (!oneFlag)
+                                {
+                                    // 两圆心的距离
+                                    double distanceOne = Math.Sqrt((pointOne.X - currentNodes[j].X) * (pointOne.X - currentNodes[j].X) +
+                                        (pointOne.Y - currentNodes[j].Y) * (pointOne.Y - currentNodes[j].Y));
+                                    // 重叠
+                                    if (currentNodes[j].Radius + newNode.Radius + bubbleGap - distanceOne > 0.1)
+                                    {
+                                        oneFlag = true;
+                                    }
+                                }
+
+                                if (!twoFlag)
+                                {
+                                    // 两圆心的距离
+                                    double distanceTwo = Math.Sqrt((pointTwo.X - currentNodes[j].X) * (pointTwo.X - currentNodes[j].X) +
+                                        (pointTwo.Y - currentNodes[j].Y) * (pointTwo.Y - currentNodes[j].Y));
+                                    // 重叠
+                                    if (currentNodes[j].Radius + newNode.Radius + bubbleGap - distanceTwo > 0.1)
+                                    {
+                                        twoFlag = true;
+                                    }
+                                }
+                            }
+
+                            // 全没有重叠
+                            if (!oneFlag && !twoFlag)
+                            {
+                                // 新气泡相对相切气泡的角度（位置1）
+                                double angleOne = CalculateAngle(pointOne, new Point(findBubbleList[i].X, findBubbleList[i].Y));
+
+                                // 新气泡相对相切气泡的角度（位置2）
+                                double angleTwo = CalculateAngle(pointTwo, new Point(findBubbleList[i].X, findBubbleList[i].Y));
+
+                                // 两相切气泡指针方向角度
+                                double angle = CalculateAngle(new Point(currentNodes.LastOrDefault().X, currentNodes.LastOrDefault().Y),
+                                    new Point(findBubbleList[i].X, findBubbleList[i].Y));
+
+                                // 取顺时针/逆时针方向180度的圆点坐标
+                                if (CheckAngleInRightHand(angle, Math.PI, angleOne, r > 50))
+                                {
+                                    // 设定坐标
+                                    newNode.X = pointOne.X;
+                                    newNode.Y = pointOne.Y;
+                                }
+                                else
+                                {
+                                    // 设定坐标
+                                    newNode.X = pointTwo.X;
+                                    newNode.Y = pointTwo.Y;
+                                }
+
+                                // 设定相切气泡
+                                newNode.TangentBubbles.Add(currentNodes.LastOrDefault());
+                                newNode.TangentBubbles.Add(findBubbleList[i]);
+
+                                currentNodes.Add(newNode);
+                                break;
+                            }
+                            else if (!oneFlag)
+                            {
+                                // 设定坐标
+                                newNode.X = pointOne.X;
+                                newNode.Y = pointOne.Y;
+                                // 设定相切气泡
+                                newNode.TangentBubbles.Add(currentNodes.LastOrDefault());
+                                newNode.TangentBubbles.Add(findBubbleList[i]);
+
+                                currentNodes.Add(newNode);
+                                break;
+                            }
+                            else if (!twoFlag)
+                            {
+                                // 设定坐标
+                                newNode.X = pointTwo.X;
+                                newNode.Y = pointTwo.Y;
+                                // 设定相切气泡
+                                newNode.TangentBubbles.Add(currentNodes.LastOrDefault());
+                                newNode.TangentBubbles.Add(findBubbleList[i]);
+
+                                currentNodes.Add(newNode);
+                                break;
+                            }
+                        }
+                    }
+            }
+        }
+
+        private void CreateBubbleNode(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
+        {
+            var newNode = new BubbleNode();
+            newNode.Radius = newBubbleRadius;
+
+            newNode.Shape = new Bubble()
+            {
+                DataContext = data,
+                Diameter = newNode.Radius * 2,
+                Content = chart.BubbleContent
+            };
 
             // create first bubble
             if (currentNodes.Count == 0)
@@ -276,7 +401,7 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        private void DrawBubbles(Point canvasCenter, List<BubbleNode> currentNodes, List<BubbleData> currentDatas)
+        private void DrawBubbles(Point canvasCenter, List<BubbleNode> currentNodes)
         {
             var top = chart.ActualHeight;
             var bottom = chart.ActualHeight;
@@ -342,37 +467,9 @@ namespace Kant.Wpf.Controls.Chart
             ChartCanvas.RenderTransformOrigin = new Point(0.5, 0.5);
             ChartCanvas.RenderTransform = new ScaleTransform(scale, scale);
 
-            // scale bubble labels
-            foreach (var data in currentDatas)
-            {
-                var scales = new Dictionary<string, double>();
-
-                if (data.LabelSizes == null)
-                {
-                    continue;
-                }
-
-                var node = currentNodes.Find(n => n.Name == data.Name);
-
-                if (node == null)
-                {
-                    continue;
-                }
-
-                foreach (var record in data.LabelSizes)
-                {
-                    var marginAlpha = 15;
-                    var length = (node.Radius / Math.Sqrt(2)) * 2;
-                    length -= length / marginAlpha;
-                    scales.Add(record.Key, (length / (record.Value.Height > record.Value.Width ? record.Value.Height : record.Value.Width)));
-                }
-
-                data.LabelScales = new ReadOnlyDictionary<string, double>(scales);
-            }
-
             #region draw bubbles
 
-            foreach (var node in currentNodes)
+            foreach(var node in currentNodes)
             {
                 Canvas.SetTop(node.Shape, node.Y - node.Radius);
                 Canvas.SetLeft(node.Shape, node.X - node.Radius);
@@ -396,7 +493,7 @@ namespace Kant.Wpf.Controls.Chart
             var collisionAlpha = 0.1;
             var differFromPointXAndNodeX = point.X - node.X;
             var differFromPointYAndNodeY = point.Y - node.Y;
-            var distanceBetweenCentersFromNodeToPoint = Math.Sqrt(differFromPointXAndNodeX * differFromPointXAndNodeX + Math.Pow(differFromPointYAndNodeY, 2));
+            var distanceBetweenCentersFromNodeToPoint = Math.Sqrt(differFromPointXAndNodeX) * differFromPointXAndNodeX + Math.Pow(differFromPointYAndNodeY, 2);
             var distanceBetweenCentersFromNodeToNewBubble = node.Radius + newBubbleRadius + bubbleGap;
 
             if (distanceBetweenCentersFromNodeToNewBubble - distanceBetweenCentersFromNodeToPoint > collisionAlpha)
@@ -506,49 +603,6 @@ namespace Kant.Wpf.Controls.Chart
                 }
             }
         }
-
-        #endregion
-
-        #region node events
-
-        private void NodeMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (chart.HighlightMode == HighlightMode.MouseEnter)
-            {
-                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
-            }
-        }
-
-        private void NodeMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (chart.HighlightMode == HighlightMode.MouseEnter)
-            {
-                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
-            }
-        }
-
-        private void NodeMouseLeftButtonUp(object sender, MouseEventArgs e)
-        {
-            if (chart.HighlightMode == HighlightMode.MouseLeftButtonUp)
-            {
-                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, ((Bubble)e.Source).Tag as string);
-            }
-        }
-
-        private void RemoveElementEventHandlers()
-        {
-            if(CurrentNodes != null)
-            {
-                foreach(var node in CurrentNodes)
-                {
-                    node.Shape.MouseEnter -= NodeMouseEnter;
-                    node.Shape.MouseLeave -= NodeMouseLeave;
-                    node.Shape.MouseLeftButtonUp -= NodeMouseLeftButtonUp;
-                }
-            }
-        }
-
-        #endregion
 
         #endregion
 

@@ -32,9 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kant.Wpf.MvvmFoundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Kant.Wpf.Toolkit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\Kant.Wpf.MvvmFoundation.dll</HintPath>
+      <HintPath>..\References\Kant.Wpf.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -95,10 +95,6 @@
       <Project>{76f11285-d4f6-4440-b001-c14a7738cd58}</Project>
       <Name>Kant.Wpf.Controls.Bubble</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="References\Kant.Wpf.MvvmFoundation.dll" />
-    <Content Include="References\Kant.Wpf.MvvmFoundation.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

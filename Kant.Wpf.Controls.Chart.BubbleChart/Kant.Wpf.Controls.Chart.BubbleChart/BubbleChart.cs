@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kant.Wpf.Toolkit;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -170,6 +171,7 @@ namespace Kant.Wpf.Controls.Chart
 
         public DataTemplate BubbleLabelTemplate { get; set; }
 
+        // will be dp
         public double BubbleAnticipateMinRadius { get; set; }
 
         public Brush HighlightBrush { get; set; }

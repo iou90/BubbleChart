@@ -1,8 +1,10 @@
-﻿using Kant.Wpf.MvvmFoundation;
+﻿using Kant.Wpf.Toolkit;
+using Kant.Wpf.Toolkit.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -21,12 +23,12 @@ namespace Kant.Wpf.Controls.Chart.Example
         public MainViewModel()
         {
             random = new Random();
-            BubbleGap = 5;
+            BubbleGap = 1;
             bubbleColor = (Brush)Application.Current.FindResource("BubbleColor");
             bubbleLabelStyle1 = (Style)Application.Current.FindResource("BubbleLabelStyle1");
             bubbleLabelStyle2 = (Style)Application.Current.FindResource("BubbleLabelStyle2");
             BubbleLabelStyle = bubbleLabelStyle2;
-            Label = "hey";
+            Label = "finish the fight";
             Diameter = 55;
 
             // random datas
@@ -35,11 +37,20 @@ namespace Kant.Wpf.Controls.Chart.Example
 
             for(var index = 0; index < count; index++)
             {
+                var name = "word" + index.ToString();
+                var weight = random.Next(5, 55555);
+
                 datas.Add(new BubbleData()
                 {
-                    Name = "word" + index.ToString(),
-                    Weight = random.Next(5, 55555),
-                    Color = bubbleColor
+                    Name = name,
+                    Weight = weight,
+                    Color = bubbleColor,
+
+                    LabelSizes = new Dictionary<string, Size>()
+                    {
+                        { "Name", MeasureHepler.MeasureString(name, bubbleLabelStyle1, CultureInfo.CurrentCulture) },
+                        { "Weight", MeasureHepler.MeasureString(weight.ToString(), bubbleLabelStyle2, CultureInfo.CurrentCulture) }
+                    }
                 });
             }
 
@@ -62,11 +73,20 @@ namespace Kant.Wpf.Controls.Chart.Example
 
                     for (var index = 0; index < count; index++)
                     {
+                        var name = "word" + index.ToString();
+                        var weight = random.Next(5, 55555);
+
                         datas.Add(new BubbleData()
                         {
-                            Name = "word" + index.ToString(),
-                            Weight = random.Next(5, 55555),
-                            Color = bubbleColor
+                            Name = name,
+                            Weight = weight,
+                            Color = bubbleColor,
+
+                            LabelSizes = new Dictionary<string, Size>()
+                            {
+                                { "Name", MeasureHepler.MeasureString(name, bubbleLabelStyle1, CultureInfo.CurrentCulture) },
+                                { "Weight", MeasureHepler.MeasureString(weight.ToString(), bubbleLabelStyle2, CultureInfo.CurrentCulture) }
+                            }
                         });
                     }
 

@@ -34,9 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kant.Wpf.MvvmFoundation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Kant.Wpf.Toolkit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\Kant.Wpf.MvvmFoundation.dll</HintPath>
+      <HintPath>..\References\Kant.Wpf.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -109,10 +109,6 @@
       <Project>{7a5b5406-c805-47df-9c53-3d9324c9c3c4}</Project>
       <Name>Kant.Wpf.Controls.Chart.BubbleChart</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="References\Kant.Wpf.MvvmFoundation.dll" />
-    <Content Include="References\Kant.Wpf.MvvmFoundation.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

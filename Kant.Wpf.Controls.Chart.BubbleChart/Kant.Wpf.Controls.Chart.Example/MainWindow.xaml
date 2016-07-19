@@ -79,21 +79,26 @@
                                         HighlightNode="{Binding HighlightNode}">
                     <kantCharts:BubbleChart.BubbleLabelTemplate>
                         <DataTemplate DataType="kantControls:Bubble">
-                            <StackPanel>
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        RenderTransformOrigin="0.5, 0.5">
+                                <StackPanel.RenderTransform>
+                                    <ScaleTransform ScaleX="{Binding LabelScales[Name]}"
+                                                    ScaleY="{Binding LabelScales[Name]}" />
+                                </StackPanel.RenderTransform>
                                 <TextBlock HorizontalAlignment="Center"
+                                           Margin="0,-5"
                                            Style="{StaticResource BubbleLabelStyle1}"
-                                           Text="{Binding Name}" />
+                                           Text="{Binding Name}"></TextBlock>
                                 <TextBlock HorizontalAlignment="Center"
                                            Style="{StaticResource BubbleLabelStyle2}"
                                            Text="{Binding Weight}" />
-                                <!--<TextBlock HorizontalAlignment="Center"
-                                           Text="{Binding Catalog}" />-->
                             </StackPanel>
                         </DataTemplate>
                     </kantCharts:BubbleChart.BubbleLabelTemplate>
                 </kantCharts:BubbleChart>
                 <!--<kantControls:Bubble Diameter="{Binding Diameter}">
-                    <TextBlock Text="{Binding Label}" />
+                    <TextBlock Text="{Binding Label}" Style="{StaticResource BubbleLabelStyle1}" FontSize="25" />
                 </kantControls:Bubble>-->
             </Border>
         </Grid>
