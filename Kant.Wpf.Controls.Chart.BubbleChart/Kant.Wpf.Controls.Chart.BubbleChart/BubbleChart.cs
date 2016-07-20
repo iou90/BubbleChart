@@ -108,6 +108,18 @@ namespace Kant.Wpf.Controls.Chart
             ((BubbleChart)o).assist.CreateChart();
         }
 
+        private static void OnBubbleBrushSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            var chart = (BubbleChart)o;
+            chart.styleManager.UpdateNodeBrushes((Brush)e.NewValue, chart.assist.CurrentNodes);
+        }
+
+        private static void OnBubbleBrushesSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            var chart = (BubbleChart)o;
+            chart.styleManager.UpdateNodeBrushes((Dictionary<string, Brush>)e.NewValue, chart.assist.CurrentNodes);
+        }
+
         private static object HighlightNodeValueCallback(DependencyObject o, object value)
         {
             var chart = (BubbleChart)o;
@@ -152,6 +164,26 @@ namespace Kant.Wpf.Controls.Chart
         }
 
         public static readonly DependencyProperty BubbleGapProperty = DependencyProperty.Register("BubbleGap", typeof(double), typeof(BubbleChart), new PropertyMetadata(5.0, OnBubbleGapSourceChanged));
+
+        /// <summary>
+        /// universal node brush,
+        /// will not work if BubbleBrushes is setted
+        /// </summary>
+        public Brush BubbleBrush
+        {
+            get { return (Brush)GetValue(BubbleBrushProperty); }
+            set { SetValue(BubbleBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty BubbleBrushProperty = DependencyProperty.Register("BubbleBrush", typeof(Brush), typeof(BubbleChart), new PropertyMetadata(OnBubbleBrushSourceChanged));
+
+        public Dictionary<string, Brush> BubbleBrushes
+        {
+            get { return (Dictionary<string, Brush>)GetValue(BubbleBrushesProperty); }
+            set { SetValue(BubbleBrushesProperty, value); }
+        }
+
+        public static readonly DependencyProperty BubbleBrushesProperty = DependencyProperty.Register("BubbleBrushes", typeof(Dictionary<string, Brush>), typeof(BubbleChart), new PropertyMetadata(OnBubbleBrushesSourceChanged));
 
         public string HighlightNode
         {

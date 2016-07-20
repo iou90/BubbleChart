@@ -30,6 +30,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             Label = "finish the fight";
             Diameter = 55;
             BubbleGap = 1;
+            //BubbleBrush = bubbleColor;
             //AnticipateMinRadius = 1;
 
             // random datas
@@ -45,7 +46,7 @@ namespace Kant.Wpf.Controls.Chart.Example
                 {
                     Name = name,
                     Weight = weight,
-                    Color = bubbleColor,
+                    //Color = bubbleColor,
 
                     LabelSizes = new Dictionary<string, Size>()
                     {
@@ -56,6 +57,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             }
 
             Datas = datas;
+            BubbleBrushes = new Dictionary<string, Brush>() { { "word1", bubbleColor } };
         }
 
         #endregion
@@ -204,6 +206,40 @@ namespace Kant.Wpf.Controls.Chart.Example
                 {
                     bubbleGap = value;
                     RaisePropertyChanged(() => BubbleGap);
+                }
+            }
+        }
+
+        private Brush bubbleBrush;
+        public Brush BubbleBrush
+        {
+            get
+            {
+                return bubbleBrush;
+            }
+            set
+            {
+                if (value != bubbleBrush)
+                {
+                    bubbleBrush = value;
+                    RaisePropertyChanged(() => BubbleBrush);
+                }
+            }
+        }
+
+        private Dictionary<string, Brush> bubbleBrushes;
+        public Dictionary<string, Brush> BubbleBrushes
+        {
+            get
+            {
+                return bubbleBrushes;
+            }
+            set
+            {
+                if (value != bubbleBrushes)
+                {
+                    bubbleBrushes = value;
+                    RaisePropertyChanged(() => BubbleBrushes);
                 }
             }
         }

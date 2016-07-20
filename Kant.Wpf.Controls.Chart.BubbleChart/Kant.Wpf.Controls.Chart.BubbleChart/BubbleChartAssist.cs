@@ -95,8 +95,10 @@ namespace Kant.Wpf.Controls.Chart
 
             #region set bubble initial information
 
-            var anticipateMinRaidus = 15;
+            // for more significant representation of the differ from bubble radius of smooth datas
             var bubbleLargerCoefficient = 5;
+            
+            var anticipateMinRaidus = 15;
             var canvasCenter = new Point(chart.ActualWidth / 2, chart.ActualHeight / 2);
             var canvasRadius = Math.Min(canvasCenter.X, canvasCenter.Y);
             var canvasArea = Math.PI * Math.Pow(canvasRadius, 2);
@@ -115,48 +117,64 @@ namespace Kant.Wpf.Controls.Chart
             #endregion
 
             // create bubble nodes
+            var index = 0;
+
             foreach (var data in currentDatas)
             {
+                #region initial bubble node 
+
                 //var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
                 var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - anticipateMinRaidus) / (maxWeight - minWeight)) + anticipateMinRaidus;
                 bubbleRadius += margin;
-                CreateBubbleNode(data, CurrentNodes, canvasCenter, bubbleRadius, chart.BubbleGap);
+
+                var newNode = new BubbleNode();
+                newNode.Index = index;
+                newNode.Radius = bubbleRadius;
+                newNode.Name = data.Name;
+
+                newNode.Shape = new Bubble()
+                {
+                    DataContext = data,
+                    Diameter = newNode.Radius * 2,
+                    ContentTemplate = chart.BubbleLabelTemplate
+                };
+
+                if (data.Color != null)
+                {
+                    newNode.Shape.Fill = data.Color.CloneCurrentValue();
+                }
+                else if (chart.BubbleBrushes != null)
+                {
+                    if (chart.BubbleBrushes.Keys.Contains(newNode.Name))
+                    {
+                        newNode.Shape.Fill = chart.BubbleBrushes[newNode.Name].CloneCurrentValue();
+                    }
+                }
+                else if (chart.BubbleBrush != null)
+                {
+                    newNode.Shape.Fill = chart.BubbleBrush.CloneCurrentValue();
+                }
+
+                newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
+                newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data));
+
+                // for highlighting or other actions
+                newNode.Shape.Tag = newNode.Name;
+                newNode.Shape.MouseEnter += NodeMouseEnter;
+                newNode.Shape.MouseLeave += NodeMouseLeave;
+                newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
+
+                #endregion
+
+                CreateBubbleNode(newNode, CurrentNodes, canvasCenter, chart.BubbleGap);
+                index++;
             }
 
             DrawBubbles(canvasCenter, CurrentNodes,  currentDatas);
         }
 
-        private void CreateBubbleNode(BubbleData data, List<BubbleNode> currentNodes, Point canvasCenter, double newBubbleRadius, double bubbleGap)
+        private void CreateBubbleNode(BubbleNode newNode, List<BubbleNode> currentNodes, Point canvasCenter, double bubbleGap)
         {
-            #region initial bubble node 
-
-            var newNode = new BubbleNode();
-            newNode.Radius = newBubbleRadius;
-            newNode.Name = data.Name;
-
-            newNode.Shape = new Bubble()
-            {
-                DataContext = data,
-                Diameter = newNode.Radius * 2,
-                ContentTemplate = chart.BubbleLabelTemplate
-            };
-
-            if(data.Color != null)
-            {
-                newNode.Shape.Fill = data.Color;
-            }
-
-            newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
-            newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data));
-
-            // for highlighting or other actions
-            newNode.Shape.Tag = newNode.Name;
-            newNode.Shape.MouseEnter += NodeMouseEnter;
-            newNode.Shape.MouseLeave += NodeMouseLeave;
-            newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
-
-            #endregion
-
             // create first bubble
             if (currentNodes.Count == 0)
             {
@@ -173,7 +191,6 @@ namespace Kant.Wpf.Controls.Chart
                 // set second bubble initial angle to 45
                 var rad = Math.PI / 180 * 45;
 
-                // clockwiseControl x is 100, y is - 100
                 var distanceBetweenCenters = currentNodes[0].Radius + newNode.Radius + bubbleGap;
                 newNode.X = canvasCenter.X + Math.Sin(rad) * (distanceBetweenCenters + 100);
                 newNode.Y = canvasCenter.Y + Math.Cos(rad) * (distanceBetweenCenters - 100);
@@ -185,97 +202,125 @@ namespace Kant.Wpf.Controls.Chart
             }
 
             var initialAngle = 70;
+            var lastIndex = currentNodes.Last().Index;
 
-            // find second tangent bubble from currrent nodes except the last of it
-            for (var index = 0; index < currentNodes.Count - 1; index++)
+            // find second tangent bubble
+            for (var round = 0; round < currentNodes.Count; round++)
             {
-                #region prepare for checking collisions
+                var bubbleStack = currentNodes.FindAll(n => n.Index <= lastIndex - round);
+                var candidateBubbles = new List<BubbleNode>();
 
-                var interativeNode = currentNodes[index];
-                var lastNode = currentNodes.Last();
-                var distanceBetweenCentersFromLastNodeToNewBubble = lastNode.Radius + newNode.Radius + bubbleGap;
-                var distanceBetweenCentersFromInterativeNodeToNewBubble = interativeNode.Radius + newNode.Radius + bubbleGap;
-                var interativeNodeXRelativeToLastNode = interativeNode.X - lastNode.X;
-                var interativeNodeYRelativeToLastNode = interativeNode.Y - lastNode.Y;
-                var squareOfX = Math.Pow(interativeNodeXRelativeToLastNode, 2);
-                var squareOfY = Math.Pow(interativeNodeYRelativeToLastNode, 2);
-                var squareOfD1 = Math.Pow(distanceBetweenCentersFromLastNodeToNewBubble, 2);
-                var sumFromSquareOfXAndSquareOfY = squareOfX + squareOfY;
-                var differFromSquareOfD1AndSquareOfD2 = squareOfD1 - Math.Pow(distanceBetweenCentersFromInterativeNodeToNewBubble, 2);
-                var sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 = sumFromSquareOfXAndSquareOfY + differFromSquareOfD1AndSquareOfD2;
-                var a = 4 * sumFromSquareOfXAndSquareOfY;
-                var b = -4 * interativeNodeYRelativeToLastNode * sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2;
-                var c = Math.Pow(sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2, 2) - 4 * squareOfX * squareOfD1;
-                var squareOfB = Math.Pow(b, 2);
-                var aMultiplycMultiply4 = 4 * a * c;
-                var solutionOfQuadraticEquation = squareOfB - aMultiplycMultiply4;
-                var aMultiply2 = 2 * a;
-                var xMultiply2 = 2 * interativeNodeXRelativeToLastNode;
-                var yMultiply2 = 2 * interativeNodeYRelativeToLastNode;
-
-                #endregion
-
-                // quadratic equation has solution
-                if (solutionOfQuadraticEquation >= 0)
+                if(bubbleStack.Count >= 2)
                 {
-                    var y1 = (-b + Math.Sqrt(solutionOfQuadraticEquation)) / aMultiply2;
-                    var x1 = (sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 - yMultiply2 * y1) / xMultiply2;
-                    var y2 = (-b - Math.Sqrt(solutionOfQuadraticEquation)) / aMultiply2;
-                    var x2 = (sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 - yMultiply2 * y2) / xMultiply2;
-                    var point1 = new Point(x1 + lastNode.X, y1 + lastNode.Y);
-                    var point2 = new Point(x2 + lastNode.X, y2 + lastNode.Y);
-                    var collisionWithPoint1 = false;
-                    var collisionWithPoint2 = false;
-
-                    // check collisions
-                    for (var checkCollitionIndex = currentNodes.Count - 1; checkCollitionIndex >= 0; checkCollitionIndex--)
+                    for(var index = bubbleStack.Count - 2; index >= bubbleStack.Last().TangentBubbles.Last().Index; index--)
                     {
-                        var node = currentNodes[checkCollitionIndex];
-
-                        if (!collisionWithPoint1)
-                        {
-                            collisionWithPoint1 = CheckCollision(point1, node, newNode.Radius, bubbleGap);
-                        }
-
-                        if (!collisionWithPoint2)
-                        {
-                            collisionWithPoint2 = CheckCollision(point2, node, newNode.Radius, bubbleGap);
-                        }
+                        candidateBubbles.Insert(0, bubbleStack[index]);
                     }
+                }
 
-                    // no collisions
-                    if (!collisionWithPoint1 && !collisionWithPoint2)
+                var IsNodeAdded = false;
+
+                for (var index = 0; index < candidateBubbles.Count; index++)
+                {
+                    #region prepare for checking collisions
+
+                    var interativeNode = candidateBubbles[index];
+                    var lastNode = bubbleStack.Last();
+                    var distanceBetweenCentersFromLastNodeToNewBubble = lastNode.Radius + newNode.Radius + bubbleGap;
+                    var distanceBetweenCentersFromInterativeNodeToNewBubble = interativeNode.Radius + newNode.Radius + bubbleGap;
+                    var interativeNodeXRelativeToLastNode = interativeNode.X - lastNode.X;
+                    var interativeNodeYRelativeToLastNode = interativeNode.Y - lastNode.Y;
+                    var squareOfX = Math.Pow(interativeNodeXRelativeToLastNode, 2);
+                    var squareOfY = Math.Pow(interativeNodeYRelativeToLastNode, 2);
+                    var squareOfD1 = Math.Pow(distanceBetweenCentersFromLastNodeToNewBubble, 2);
+                    var sumFromSquareOfXAndSquareOfY = squareOfX + squareOfY;
+                    var differFromSquareOfD1AndSquareOfD2 = squareOfD1 - Math.Pow(distanceBetweenCentersFromInterativeNodeToNewBubble, 2);
+                    var sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 = sumFromSquareOfXAndSquareOfY + differFromSquareOfD1AndSquareOfD2;
+
+                    // find the third ecllipse
+                    var a = 4 * sumFromSquareOfXAndSquareOfY;
+                    var b = -4 * interativeNodeYRelativeToLastNode * sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2;
+                    var c = Math.Pow(sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2, 2) - 4 * squareOfX * squareOfD1;
+                    var squareOfB = Math.Pow(b, 2);
+                    var aMultiplycMultiply4 = 4 * a * c;
+                    var solutionOfQuadraticEquation = squareOfB - aMultiplycMultiply4;
+                    var aMultiply2 = 2 * a;
+                    var xMultiply2 = 2 * interativeNodeXRelativeToLastNode;
+                    var yMultiply2 = 2 * interativeNodeYRelativeToLastNode;
+
+                    #endregion
+
+                    // quadratic equation has solution
+                    if (solutionOfQuadraticEquation >= 0)
                     {
-                        var point = new Point(interativeNode.X, interativeNode.Y);
-                        var angleFromIntertiveNodeToPoint1 = CalculateAngle(point1, point);
-                        var newBubbleAngle = CalculateAngle(new Point(lastNode.X, lastNode.Y), point);
+                        var y1 = (-b + Math.Sqrt(solutionOfQuadraticEquation)) / aMultiply2;
+                        var x1 = (sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 - yMultiply2 * y1) / xMultiply2;
+                        var y2 = (-b - Math.Sqrt(solutionOfQuadraticEquation)) / aMultiply2;
+                        var x2 = (sumFromSumFromSquareOfXAndSquareOfYAndDifferFromSquareOfD1AndSquareOfD2 - yMultiply2 * y2) / xMultiply2;
+                        var point1 = new Point(x1 + lastNode.X, y1 + lastNode.Y);
+                        var point2 = new Point(x2 + lastNode.X, y2 + lastNode.Y);
+                        var collisionWithPoint1 = false;
+                        var collisionWithPoint2 = false;
 
-                        // > 50 means it's clockwise
-                        if (CheckAngleInRightHand(newBubbleAngle, Math.PI, angleFromIntertiveNodeToPoint1, initialAngle > 50))
+                        // check collisions
+                        for (var checkCollitionIndex = currentNodes.Count - 1; checkCollitionIndex >= 0; checkCollitionIndex--)
+                        {
+                            var node = currentNodes[checkCollitionIndex];
+
+                            if (!collisionWithPoint1)
+                            {
+                                collisionWithPoint1 = CheckCollision(point1, node, newNode.Radius, bubbleGap);
+                            }
+
+                            if (!collisionWithPoint2)
+                            {
+                                collisionWithPoint2 = CheckCollision(point2, node, newNode.Radius, bubbleGap);
+                            }
+                        }
+
+                        // no collisions
+                        if (!collisionWithPoint1 && !collisionWithPoint2)
+                        {
+                            var point = new Point(interativeNode.X, interativeNode.Y);
+                            var angleFromIntertiveNodeToPoint1 = CalculateAngle(point1, point);
+                            var newBubbleAngle = CalculateAngle(new Point(lastNode.X, lastNode.Y), point);
+
+                            // > 50 means it's clockwise
+                            if (CheckAngleInRightHand(newBubbleAngle, Math.PI, angleFromIntertiveNodeToPoint1, initialAngle > 50))
+                            {
+                                AddNode(currentNodes, interativeNode, lastNode, newNode, point1);
+                                IsNodeAdded = true;
+
+                                break;
+                            }
+                            else
+                            {
+                                AddNode(currentNodes, interativeNode, lastNode, newNode, point2);
+                                IsNodeAdded = true;
+
+                                break;
+                            }
+                        }
+                        else if (!collisionWithPoint1)
                         {
                             AddNode(currentNodes, interativeNode, lastNode, newNode, point1);
+                            IsNodeAdded = true;
 
                             break;
                         }
-                        else
+                        else if (!collisionWithPoint2)
                         {
                             AddNode(currentNodes, interativeNode, lastNode, newNode, point2);
+                            IsNodeAdded = true;
 
                             break;
                         }
                     }
-                    else if (!collisionWithPoint1)
-                    {
-                        AddNode(currentNodes, interativeNode, lastNode, newNode, point1);
+                }
 
-                        break;
-                    }
-                    else if (!collisionWithPoint2)
-                    {
-                        AddNode(currentNodes, interativeNode, lastNode, newNode, point2);
-
-                        break;
-                    }
+                if(IsNodeAdded)
+                {
+                    break;
                 }
             }
         }
