@@ -75,6 +75,8 @@
                                         LoweredOpacity="0.65"
                                         HighlightBrush="{StaticResource HighlightBrush}"
                                         BubbleGap="{Binding BubbleGap}"
+                                        BubbleBrush="{Binding BubbleBrush}"
+                                        BubbleBrushes="{Binding BubbleBrushes}"
                                         HighlightMode="{Binding HighlightMode}"
                                         Datas="{Binding Datas}"
                                         HighlightNode="{Binding HighlightNode}">

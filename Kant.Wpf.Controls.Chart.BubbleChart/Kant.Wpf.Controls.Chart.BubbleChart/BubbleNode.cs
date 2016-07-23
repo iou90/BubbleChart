@@ -13,6 +13,8 @@ namespace Kant.Wpf.Controls.Chart
             TangentBubbles = new List<BubbleNode>();
         }
 
+        public int Index { get; set; }
+
         public List<BubbleNode> TangentBubbles { get; set; }
 
         /// <summary>

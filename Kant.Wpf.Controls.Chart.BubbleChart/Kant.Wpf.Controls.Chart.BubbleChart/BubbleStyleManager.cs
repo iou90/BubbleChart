@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Kant.Wpf.Controls.Chart
 {
@@ -23,6 +24,41 @@ namespace Kant.Wpf.Controls.Chart
         {
             chart.HighlightOpacity = 1;
             chart.LoweredOpacity = 0.5;
+        }
+
+        public void UpdateNodeBrushes(Brush newBrush, List<BubbleNode> nodes)
+        {
+            if(chart == null || nodes == null || nodes.Count == 0)
+            {
+                return;
+            }
+
+            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
+
+            foreach (var node in nodes)
+            {
+                node.Shape.Fill = newBrush.CloneCurrentValue();
+                node.OriginalBrush = node.Shape.Fill.CloneCurrentValue();
+            }
+        }
+
+        public void UpdateNodeBrushes(Dictionary<string, Brush> newBrushes, List<BubbleNode> nodes)
+        {
+            if (chart == null || nodes == null || nodes.Count == 0)
+            {
+                return;
+            }
+
+            chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
+
+            foreach (var node in nodes)
+            {
+                if(newBrushes.Keys.Contains(node.Name))
+                {
+                    node.Shape.Fill = newBrushes[node.Name].CloneCurrentValue();
+                    node.OriginalBrush = node.Shape.Fill.CloneCurrentValue();
+                }
+            }
         }
 
         public void HighlightingNode(string highlightNode, List<BubbleNode> nodes)
