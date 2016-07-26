@@ -29,7 +29,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             BubbleLabelStyle = bubbleLabelStyle2;
             Label = "finish the fight";
             Diameter = 55;
-            BubbleGap = 1;
+            BubbleGap = 55;
             //BubbleBrush = bubbleColor;
             //AnticipateMinRadius = 1;
 
@@ -40,7 +40,7 @@ namespace Kant.Wpf.Controls.Chart.Example
             for(var index = 0; index < count; index++)
             {
                 var name = "word" + index.ToString();
-                var weight = 555 * (index + 1);
+                var weight = 5 * (index + 1);
 
                 datas.Add(new BubbleData()
                 {

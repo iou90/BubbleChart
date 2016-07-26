@@ -83,18 +83,22 @@
                     <kantCharts:BubbleChart.BubbleLabelTemplate>
                         <DataTemplate DataType="kantControls:Bubble">
                             <StackPanel HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        RenderTransformOrigin="0.5, 0.5">
-                                <StackPanel.RenderTransform>
-                                    <ScaleTransform ScaleX="{Binding LabelScales[Name]}"
-                                                    ScaleY="{Binding LabelScales[Name]}" />
-                                </StackPanel.RenderTransform>
+                                        VerticalAlignment="Center">
                                 <TextBlock HorizontalAlignment="Center"
                                            Style="{StaticResource BubbleLabelStyle1}"
-                                           Text="{Binding Name}"></TextBlock>
+                                           Text="{Binding Name}">
+                                    <TextBlock.LayoutTransform>
+                                        <ScaleTransform ScaleX="{Binding LabelScales[Name]}"
+                                                        ScaleY="{Binding LabelScales[Name]}" />
+                                    </TextBlock.LayoutTransform></TextBlock>
                                 <TextBlock HorizontalAlignment="Center"
                                            Style="{StaticResource BubbleLabelStyle2}"
-                                           Text="{Binding Weight}" />
+                                           Margin="0, -10"
+                                           Text="{Binding Weight}">
+                                    <TextBlock.LayoutTransform>
+                                        <ScaleTransform ScaleX="{Binding LabelScales[Weight]}"
+                                                        ScaleY="{Binding LabelScales[Weight]}" />
+                                    </TextBlock.LayoutTransform></TextBlock>
                             </StackPanel>
                         </DataTemplate>
                     </kantCharts:BubbleChart.BubbleLabelTemplate>
