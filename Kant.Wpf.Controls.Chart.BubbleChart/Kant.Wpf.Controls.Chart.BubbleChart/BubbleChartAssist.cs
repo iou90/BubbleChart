@@ -98,20 +98,20 @@ namespace Kant.Wpf.Controls.Chart
             // for more significant representation of the differ from bubble radius of smooth datas
             var bubbleLargerCoefficient = 5;
             
-            var anticipateMinRaidus = 15;
+            var anticipateMinRadius = 15;
             var canvasCenter = new Point(chart.ActualWidth / 2, chart.ActualHeight / 2);
             var canvasRadius = Math.Min(canvasCenter.X, canvasCenter.Y);
             var canvasArea = Math.PI * Math.Pow(canvasRadius, 2);
             var singleBubbleAverageArea = canvasArea / currentDatas.Count;
             var bubbleMaxRadius = Math.Sqrt(singleBubbleAverageArea / Math.PI);
             //bubbleMaxRadius = bubbleMaxRadius / chart.BubbleAnticipateMinRadius < bubbleLargerCoefficient ? chart.BubbleAnticipateMinRadius * bubbleLargerCoefficient : bubbleMaxRadius;
-            bubbleMaxRadius = bubbleMaxRadius / anticipateMinRaidus < bubbleLargerCoefficient ? anticipateMinRaidus * bubbleLargerCoefficient : bubbleMaxRadius;
+            bubbleMaxRadius = bubbleMaxRadius / anticipateMinRadius < bubbleLargerCoefficient ? anticipateMinRadius * bubbleLargerCoefficient : bubbleMaxRadius;
             var maxWeight = currentDatas.Max(d => d.Weight);
             var minWeight = currentDatas.Min(d => d.Weight);
             //var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : chart.BubbleAnticipateMinRadius;
-            var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : anticipateMinRaidus;
+            var bubbleMinRaidus = maxWeight == minWeight ? bubbleMaxRadius : anticipateMinRadius;
             //var temp = chart.BubbleAnticipateMinRadius * 2;
-            var temp = anticipateMinRaidus * 2;
+            var temp = anticipateMinRadius * 2;
             var margin = bubbleMinRaidus < temp ? temp - bubbleMinRaidus : 0;
 
             #endregion
@@ -121,59 +121,60 @@ namespace Kant.Wpf.Controls.Chart
 
             foreach (var data in currentDatas)
             {
-                #region initial bubble node 
-
-                //var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
-                var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - anticipateMinRaidus) / (maxWeight - minWeight)) + anticipateMinRaidus;
-                bubbleRadius += margin;
-
-                var newNode = new BubbleNode();
-                newNode.Index = index;
-                newNode.Radius = bubbleRadius;
-                newNode.Name = data.Name;
-
-                newNode.Shape = new Bubble()
-                {
-                    DataContext = data,
-                    Diameter = newNode.Radius * 2,
-                    ContentTemplate = chart.BubbleLabelTemplate
-                };
-
-                if (data.Color != null)
-                {
-                    newNode.Shape.Fill = data.Color.CloneCurrentValue();
-                }
-                else if (chart.BubbleBrushes != null)
-                {
-                    if (chart.BubbleBrushes.Keys.Contains(newNode.Name))
-                    {
-                        newNode.Shape.Fill = chart.BubbleBrushes[newNode.Name].CloneCurrentValue();
-                    }
-                }
-                else if (chart.BubbleBrush != null)
-                {
-                    newNode.Shape.Fill = chart.BubbleBrush.CloneCurrentValue();
-                }
-
-                newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
-                newNode.Shape.SetBinding(Bubble.ContentProperty, BindingHelper.ConfigureBinding("", data));
-
-                // for highlighting or other actions
-                newNode.Shape.Tag = newNode.Name;
-                newNode.Shape.MouseEnter += NodeMouseEnter;
-                newNode.Shape.MouseLeave += NodeMouseLeave;
-                newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
-
-                #endregion
-
-                CreateBubbleNode(newNode, CurrentNodes, canvasCenter, chart.BubbleGap);
+                LayoutBubbleNode(CreateBubbleNode(data, maxWeight, minWeight, bubbleMaxRadius, anticipateMinRadius, margin, index), CurrentNodes, canvasCenter, chart.BubbleGap);
                 index++;
             }
 
             DrawBubbles(canvasCenter, CurrentNodes,  currentDatas);
         }
 
-        private void CreateBubbleNode(BubbleNode newNode, List<BubbleNode> currentNodes, Point canvasCenter, double bubbleGap)
+        private BubbleNode CreateBubbleNode(BubbleData data, double maxWeight, double minWeight, double bubbleMaxRadius, double anticipateMinRadius, double margin, int index)
+        {
+            //var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - chart.BubbleAnticipateMinRadius) / (maxWeight - minWeight)) + chart.BubbleAnticipateMinRadius;
+            var bubbleRadius = maxWeight == minWeight ? bubbleMaxRadius : (data.Weight - minWeight) * ((bubbleMaxRadius - anticipateMinRadius) / (maxWeight - minWeight)) + anticipateMinRadius;
+            bubbleRadius += margin;
+
+            var newNode = new BubbleNode();
+            newNode.Index = index;
+            newNode.Radius = bubbleRadius;
+            newNode.Name = data.Name;
+            newNode.Shape = new Bubble() { Diameter = newNode.Radius * 2 };
+
+            if (data.Color != null)
+            {
+                newNode.Shape.Fill = data.Color.CloneCurrentValue();
+            }
+            else if (chart.BubbleBrushes != null)
+            {
+                if (chart.BubbleBrushes.Keys.Contains(newNode.Name))
+                {
+                    newNode.Shape.Fill = chart.BubbleBrushes[newNode.Name].CloneCurrentValue();
+                }
+            }
+            else if (chart.BubbleBrush != null)
+            {
+                newNode.Shape.Fill = chart.BubbleBrush.CloneCurrentValue();
+            }
+
+            newNode.OriginalBrush = newNode.Shape.Fill.CloneCurrentValue();
+
+            if (chart.BubbleLabelTemplate != null)
+            {
+                newNode.Shape.DataContext = data;
+                newNode.Shape.ContentTemplate = chart.BubbleLabelTemplate;
+                newNode.Shape.SetCurrentValue(ContentControl.ContentProperty, data);
+            }
+
+            // for highlighting or other actions
+            newNode.Shape.Tag = newNode.Name;
+            newNode.Shape.MouseEnter += NodeMouseEnter;
+            newNode.Shape.MouseLeave += NodeMouseLeave;
+            newNode.Shape.MouseLeftButtonUp += NodeMouseLeftButtonUp;
+
+            return newNode;
+        }
+
+        private void LayoutBubbleNode(BubbleNode newNode, List<BubbleNode> currentNodes, Point canvasCenter, double bubbleGap)
         {
             // create first bubble
             if (currentNodes.Count == 0)
