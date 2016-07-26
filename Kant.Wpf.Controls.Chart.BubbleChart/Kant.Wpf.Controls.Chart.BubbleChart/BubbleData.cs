@@ -15,8 +15,20 @@ namespace Kant.Wpf.Controls.Chart
         public BubbleData()
         {
         }
-
-        public double Weight { get; set; }
+		
+		private double weight;
+        public double Weight 
+		{ 
+			get
+			{
+				return weight;
+			}
+            set
+			{
+				weight = value;
+				RaisePropertyChanged(() => Weight);
+			} 
+		}
 
         public Brush Color { get; set; }
 
