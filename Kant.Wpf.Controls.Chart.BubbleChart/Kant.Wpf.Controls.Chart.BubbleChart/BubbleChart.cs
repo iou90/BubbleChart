@@ -34,10 +34,7 @@ namespace Kant.Wpf.Controls.Chart
             assist = new BubbleChartAssist(this, styleManager);
             SizeChanged += assist.ChartSizeChanged;
 
-            Loaded += (s, e) =>
-            {
-                assist.CreateChart();
-            };
+            Loaded += BubbleChartLoaded;
         }
 
         #endregion
@@ -134,6 +131,12 @@ namespace Kant.Wpf.Controls.Chart
         }
 
         #endregion
+
+        private void BubbleChartLoaded(object sender, RoutedEventArgs e)
+        {
+            assist.CreateChart();
+            Loaded -= BubbleChartLoaded;
+        }
 
         #endregion
 
