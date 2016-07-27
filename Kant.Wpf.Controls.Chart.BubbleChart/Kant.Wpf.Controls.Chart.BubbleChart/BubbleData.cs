@@ -29,10 +29,22 @@ namespace Kant.Wpf.Controls.Chart
 				RaisePropertyChanged(() => Weight);
 			} 
 		}
+		
+		private Brush color;
+        public Brush Color 
+		{ 
+			get
+			{
+				return color;
+			}
+			set
+			{
+				color = value;
+				RaisePropertyChanged(() => Color);
+			}
+		}
 
-        public Brush Color { get; set; }
-
-        private string name;
+		private string name;
         public string Name
         {
             get
