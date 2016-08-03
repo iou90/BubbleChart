@@ -371,8 +371,16 @@ namespace Kant.Wpf.Controls.Chart
             var newY = canvasCenter.Y * 2 + top - bottom;
             var newCanvasCenter = new Point(newX / 2, newY / 2);
             var centerOffset = new Point(newCanvasCenter.X - canvasCenter.X, newCanvasCenter.Y - canvasCenter.Y);
-            ChartCanvas.Width = canvasCenter.X * 2 - left - right;
-            ChartCanvas.Height = canvasCenter.Y * 2 - top - bottom;
+            var tempWidth = canvasCenter.X * 2 - left - right;
+            var tempHeight = canvasCenter.Y * 2 - top - bottom;
+
+            if(tempWidth <= 0 || tempHeight <= 0)
+            {
+                return;
+            }
+
+            ChartCanvas.Width = tempWidth;
+            ChartCanvas.Height = tempHeight;
             var horizontalMargin = canvasCenter.X - ChartCanvas.Width / 2;
             var verticalMargin = canvasCenter.Y - ChartCanvas.Height / 2;
             ChartCanvas.Margin = new Thickness(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
