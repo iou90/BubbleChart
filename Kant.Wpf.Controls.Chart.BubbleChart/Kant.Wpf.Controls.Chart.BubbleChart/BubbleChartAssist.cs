@@ -21,7 +21,7 @@ namespace Kant.Wpf.Controls.Chart
         {
             this.chart = chart;
             this.styleManager = styleManager;
-            CurrentNodes = new List<BubbleNode>();
+            currentNodes = new List<BubbleNode>();
         }
 
         #endregion
@@ -30,13 +30,13 @@ namespace Kant.Wpf.Controls.Chart
 
         public void ChartSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if(!chart.IsLoaded || CurrentNodes == null)
+            if(!chart.IsLoaded || currentNodes == null)
             {
                 return;
             }
 
             ClearChartCanvasChilds();
-            DrawBubbles(new Point(chart.ActualWidth / 2, chart.ActualHeight / 2), CurrentNodes, currentDatas);
+            DrawBubbles(new Point(chart.ActualWidth / 2, chart.ActualHeight / 2), currentNodes, currentDatas);
         }
 
         public void UpdateChart(IEnumerable<BubbleData> datas)
@@ -68,9 +68,9 @@ namespace Kant.Wpf.Controls.Chart
                 currentDatas.Clear();
             }
 
-            if (CurrentNodes != null)
+            if (currentNodes != null)
             {
-                CurrentNodes.Clear();
+                currentNodes.Clear();
             }
         }
 
@@ -121,11 +121,11 @@ namespace Kant.Wpf.Controls.Chart
 
             foreach (var data in currentDatas)
             {
-                LayoutBubbleNode(CreateBubbleNode(data, maxWeight, minWeight, bubbleMaxRadius, anticipateMinRadius, margin, index), CurrentNodes, canvasCenter, chart.BubbleGap);
+                LayoutBubbleNode(CreateBubbleNode(data, maxWeight, minWeight, bubbleMaxRadius, anticipateMinRadius, margin, index), currentNodes, canvasCenter, chart.BubbleGap);
                 index++;
             }
 
-            DrawBubbles(canvasCenter, CurrentNodes,  currentDatas);
+            DrawBubbles(canvasCenter, currentNodes,  currentDatas);
         }
 
         private BubbleNode CreateBubbleNode(BubbleData data, double maxWeight, double minWeight, double bubbleMaxRadius, double anticipateMinRadius, double margin, int index)
@@ -593,9 +593,9 @@ namespace Kant.Wpf.Controls.Chart
 
         private void RemoveElementEventHandlers()
         {
-            if(CurrentNodes != null)
+            if(currentNodes != null)
             {
-                foreach(var node in CurrentNodes)
+                foreach(var node in currentNodes)
                 {
                     node.Shape.MouseEnter -= NodeMouseEnter;
                     node.Shape.MouseLeave -= NodeMouseLeave;
@@ -612,7 +612,14 @@ namespace Kant.Wpf.Controls.Chart
 
         public Canvas ChartCanvas { get; set; }
 
-        public List<BubbleNode> CurrentNodes { get; private set; }
+        private List<BubbleNode> currentNodes;
+        public IReadOnlyList<BubbleNode> CurrentNodes
+        {
+            get
+            {
+                return currentNodes;
+            }
+        }
 
         private List<BubbleData> currentDatas;
 

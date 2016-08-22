@@ -26,7 +26,7 @@ namespace Kant.Wpf.Controls.Chart
             chart.LoweredOpacity = 0.5;
         }
 
-        public void UpdateNodeBrushes(Brush newBrush, List<BubbleNode> nodes)
+        public void UpdateNodeBrushes(Brush newBrush, IReadOnlyList<BubbleNode> nodes)
         {
             if(chart == null || nodes == null || nodes.Count == 0)
             {
@@ -42,7 +42,7 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        public void UpdateNodeBrushes(Dictionary<string, Brush> newBrushes, List<BubbleNode> nodes)
+        public void UpdateNodeBrushes(Dictionary<string, Brush> newBrushes, IReadOnlyList<BubbleNode> nodes)
         {
             if (chart == null || nodes == null || nodes.Count == 0)
             {
@@ -61,7 +61,7 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        public void HighlightingNode(string highlightNode, List<BubbleNode> nodes)
+        public void HighlightingNode(string highlightNode, IReadOnlyList<BubbleNode> nodes)
         {
             if ((string.IsNullOrEmpty(highlightNode) && string.IsNullOrEmpty(chart.HighlightNode) || nodes == null || nodes.Count == 0))
             {
@@ -80,7 +80,7 @@ namespace Kant.Wpf.Controls.Chart
                 return;
             }
 
-            if(string.IsNullOrEmpty(highlightNode) || !nodes.Exists(node => node.Name == highlightNode))
+            if(string.IsNullOrEmpty(highlightNode) || !nodes.ToList().Exists(node => node.Name == highlightNode))
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        private void RecoverHighlight(List<BubbleNode> nodes, bool resetHighlightStatus = true)
+        private void RecoverHighlight(IReadOnlyList<BubbleNode> nodes, bool resetHighlightStatus = true)
         {
             foreach(var node in nodes)
             {

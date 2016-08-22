@@ -163,15 +163,15 @@ namespace Kant.Wpf.Controls.Chart.Example
         #region Fields & Properties
 
         private List<BubbleData> datas;
-        public List<BubbleData> Datas
+        public IReadOnlyList<BubbleData> Datas
         {
             get
             {
                 return datas;
             }
-            set
+            private set
             {
-                datas = value;
+                datas = value == null ? null : value.ToList();
                 RaisePropertyChanged(() => Datas);
             }
         }
@@ -228,17 +228,17 @@ namespace Kant.Wpf.Controls.Chart.Example
         }
 
         private Dictionary<string, Brush> bubbleBrushes;
-        public Dictionary<string, Brush> BubbleBrushes
+        public IReadOnlyDictionary<string, Brush> BubbleBrushes
         {
             get
             {
                 return bubbleBrushes;
             }
-            set
+            private set
             {
                 if (value != bubbleBrushes)
                 {
-                    bubbleBrushes = value;
+                    bubbleBrushes = value == null ? null : value.ToDictionary(item => item.Key, item => item.Value);
                     RaisePropertyChanged(() => BubbleBrushes);
                 }
             }
