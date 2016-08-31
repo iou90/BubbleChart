@@ -69,19 +69,19 @@ namespace Kant.Wpf.Controls.Chart
             }
 
             // reset each element's brush first
-            RecoverHighlight(nodes, false);
+            RecoverHighlights(nodes, false);
 
-            // reset highlight if highlighting the same node twice
-            if((from node in nodes where node.Name == chart.HighlightNode && node.IsHighlight select node).Count() == 1 && highlightNode == chart.HighlightNode)
+            if (string.IsNullOrEmpty(highlightNode) || !nodes.ToList().Exists(node => node.Name == highlightNode))
             {
-                RecoverHighlight(nodes);
-                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
-
                 return;
             }
 
-            if(string.IsNullOrEmpty(highlightNode) || !nodes.ToList().Exists(node => node.Name == highlightNode))
+            // reset highlight if highlighting the same node twice
+            if ((from node in nodes where node.Name == chart.HighlightNode && node.IsHighlight select node).Count() == 1 && highlightNode == chart.HighlightNode)
             {
+                RecoverHighlights(nodes);
+                chart.SetCurrentValue(BubbleChart.HighlightNodeProperty, null);
+
                 return;
             }
 
@@ -106,7 +106,7 @@ namespace Kant.Wpf.Controls.Chart
             }
         }
 
-        private void RecoverHighlight(IReadOnlyList<BubbleNode> nodes, bool resetHighlightStatus = true)
+        private void RecoverHighlights(IReadOnlyList<BubbleNode> nodes, bool resetHighlightStatus = true)
         {
             foreach(var node in nodes)
             {
